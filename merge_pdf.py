@@ -33,7 +33,8 @@ def merge_pdfs(paths: list, output: str):
     http://www.blog.pythonlibrary.org/2018/04/11/splitting-and-merging-pdfs-with-python/
     '''
     pdf_writer = PdfFileWriter()
-    for path in paths:
+    for index, path in enumerate(paths):
+        print('{i}. {f}'.format(i=index+1, f=path))
         pdf_reader = PdfFileReader(path)
         for page in range(pdf_reader.getNumPages()):
             # Add each page to the writer object
@@ -42,6 +43,7 @@ def merge_pdfs(paths: list, output: str):
     with open(output, 'wb') as out:
         pdf_writer.write(out)
     out.close()
+    print('Finished!')
     pass
 
 
@@ -89,7 +91,8 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
                     print('Done')
                 else:
                     sys.exit('file [{ef}] is not supported.'.format(ef=arg))
-            except:
+            except Exception as e:
+                print(e)
                 sys.exit('cannot save file [{ef}] as pdf.'.format(ef=arg))
             arg = arg+'.pdf'
         if isfile(arg):
@@ -105,9 +108,37 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
 
 
 def main():
-    if len(sys.argv) < 2:
-        sys.exit('Usage: python3 merge_pdf.py <file_path> [<file_path> ...]')
-    args = [os.path.normpath(p) for p in sys.argv[1:]]
+    args = []
+    if len(sys.argv) == 1:
+        while True:
+            arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to finish): ')
+            if arg == 'dd':
+                args.pop()
+            elif arg:
+                # default local volume label
+                volume_label = 'C:'
+                split_args = arg.split(':')
+                for index, a in enumerate(split_args):
+                    if index == 0:
+                        volume_label = a[-1]+':'
+                        continue
+                    elif index != len(split_args)-1:
+                        a = a[:-1]
+                    a = a.strip().strip('\"')
+                    if a:
+                        a = join(volume_label, a)
+                        args.append(os.path.normpath(a))
+            else:
+                break
+            print()
+            for index, arg in enumerate(args):
+                print('{i}. {f}'.format(i=index+1, f=arg))
+            print()
+        # sys.exit('Usage: python3 merge_pdf.py <file_path> [<file_path> ...]')
+    else:
+        args = [os.path.normpath(p) for p in sys.argv[1:]]
+    if len(args) < 2:
+        sys.exit('merge-pdf requires at least 2 files.')
     non_pdf_flag = contains_non_pdf(args)
     pdf_paths = args_to_paths(args=args, non_pdf_flag=non_pdf_flag)
     now_time = datetime.now().strftime('%Y%m%d%H%M%S')
