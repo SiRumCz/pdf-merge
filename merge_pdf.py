@@ -111,10 +111,8 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
 
 
 def print_tabulate(table: list):
-    print()
-    table = [[i+1, a] for i,a in enumerate(table)]
-    print(tabulate(table, headers=['order', 'file']))
-    print()
+    ptable = [[i+1, a] for i,a in enumerate(table)]
+    print('\nMerge Queue:\n\n'+tabulate(ptable, headers=['order', 'file'], tablefmt="presto")+'\n')
     pass
 
 
@@ -122,7 +120,7 @@ def main():
     args = []
     if len(sys.argv) == 1:
         while True:
-            arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to finish): ')
+            arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to start): ')
             if arg == 'dd':
                 args.pop()
             elif arg:
@@ -156,9 +154,9 @@ def main():
 
 
 if __name__ == '__main__':
-    print("\n+======================+")
+    print("\n+----------------------+")
     print("|                      |")
     print("|  PDF MERGER ver 1.0  |")
     print("|                      |")
-    print("+======================+\n")
+    print("+----------------------+\n")
     main()
