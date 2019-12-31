@@ -4,6 +4,8 @@ import comtypes.client
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from os.path import isfile, join, abspath, splitext
 from datetime import datetime
+from tabulate import tabulate
+
 
 # https://docs.microsoft.com/en-us/office/vba/api/word.wdsaveformat
 wdFormatPDF = 17
@@ -33,6 +35,7 @@ def merge_pdfs(paths: list, output: str):
     http://www.blog.pythonlibrary.org/2018/04/11/splitting-and-merging-pdfs-with-python/
     '''
     pdf_writer = PdfFileWriter()
+    print('Start merging...')
     for index, path in enumerate(paths):
         print('{i}. {f}'.format(i=index+1, f=path))
         pdf_reader = PdfFileReader(path)
@@ -93,7 +96,7 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
                     sys.exit('file [{ef}] is not supported.'.format(ef=arg))
             except Exception as e:
                 print(e)
-                sys.exit('cannot save file [{ef}] as pdf.'.format(ef=arg))
+                sys.exit('\ncannot save file [{ef}] as pdf.'.format(ef=arg))
             arg = arg+'.pdf'
         if isfile(arg):
             ret_paths.append(arg)
@@ -105,6 +108,14 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
         powerpoint.Quit()
         excel.Quit()
     return ret_paths
+
+
+def print_tabulate(table: list):
+    print()
+    table = [[i+1, a] for i,a in enumerate(table)]
+    print(tabulate(table, headers=['order', 'file']))
+    print()
+    pass
 
 
 def main():
@@ -129,11 +140,9 @@ def main():
                         a = join(volume_label, a)
                         args.append(os.path.normpath(a))
             else:
+                print('starting...')
                 break
-            print()
-            for index, arg in enumerate(args):
-                print('{i}. {f}'.format(i=index+1, f=arg))
-            print()
+            print_tabulate(table=args)
         # sys.exit('Usage: python3 merge_pdf.py <file_path> [<file_path> ...]')
     else:
         args = [os.path.normpath(p) for p in sys.argv[1:]]
@@ -147,4 +156,9 @@ def main():
 
 
 if __name__ == '__main__':
+    print("\n+======================+")
+    print("|                      |")
+    print("|  PDF MERGER ver 1.0  |")
+    print("|                      |")
+    print("+======================+\n")
     main()
