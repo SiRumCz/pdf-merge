@@ -164,7 +164,7 @@ def main():
 if __name__ == '__main__':
     print("\n+-------------------------------------+")
     print("|                                     |")
-    print("|  PDF MERGER FOR WINDOWS 10 ver 1.0  |")
+    print("|  PDF MERGER FOR WINDOWS 10 ver 1.1  |")
     print("|                                     |")
     print("+-------------------------------------+\n")
     main()
