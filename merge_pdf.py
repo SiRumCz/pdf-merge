@@ -2,6 +2,7 @@ import os
 import sys
 import comtypes.client
 from PyPDF2 import PdfFileReader, PdfFileWriter
+from os import system, name
 from os.path import isfile, join, abspath, splitext
 from datetime import datetime
 from tabulate import tabulate
@@ -46,7 +47,7 @@ def merge_pdfs(paths: list, output: str):
     with open(output, 'wb') as out:
         pdf_writer.write(out)
     out.close()
-    print('Finished!')
+    print('Finished! Merged to {output}.'.format(output=output))
     pass
 
 
@@ -56,6 +57,14 @@ def contains_non_pdf(paths: list) -> bool:
 
 def get_ext(fname: str) -> str:
     return splitext(fname)[1]
+
+
+def clear_screen(): 
+    ''' 
+    Windows clear screen function. 
+    credit: https://www.geeksforgeeks.org/clear-screen-python/ '''
+    if name == 'nt': 
+        _ = system('cls') 
 
 
 def args_to_paths(args: list, non_pdf_flag: bool) -> list:
@@ -111,6 +120,7 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
 
 
 def print_tabulate(table: list):
+    clear_screen()
     ptable = [[i+1, a] for i,a in enumerate(table)]
     print('\nMerge Queue:\n\n'+tabulate(ptable, headers=['order', 'file'], tablefmt="presto")+'\n')
     pass
@@ -118,45 +128,43 @@ def print_tabulate(table: list):
 
 def main():
     args = []
-    if len(sys.argv) == 1:
-        while True:
-            arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to start): ')
-            if arg == 'dd':
-                args.pop()
-            elif arg:
-                # default local volume label
-                volume_label = 'C:'
-                split_args = arg.split(':')
-                for index, a in enumerate(split_args):
-                    if index == 0:
-                        volume_label = a[-1]+':'
-                        continue
-                    elif index != len(split_args)-1:
-                        a = a[:-1]
-                    a = a.strip().strip('\"')
-                    if a:
-                        a = join(volume_label, a)
-                        args.append(os.path.normpath(a))
-            else:
-                print('starting...')
-                break
-            print_tabulate(table=args)
-        # sys.exit('Usage: python3 merge_pdf.py <file_path> [<file_path> ...]')
-    else:
-        args = [os.path.normpath(p) for p in sys.argv[1:]]
+    out_dir = os.path.normpath(sys.argv[1].strip().strip('\"'))
+    while True:
+        arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to start): ')
+        if arg == 'dd':
+            args.pop()
+        elif arg:
+            # default local volume label
+            volume_label = 'C:'
+            split_args = arg.split(':')
+            for index, a in enumerate(split_args):
+                if index == 0:
+                    volume_label = a[-1]+':'
+                    continue
+                elif index != len(split_args)-1:
+                    a = a[:-1]
+                a = a.strip().strip('\"')
+                if a:
+                    a = join(volume_label, a)
+                    args.append(os.path.normpath(a))
+        else:
+            clear_screen()
+            break
+        print_tabulate(table=args)
     if len(args) < 2:
         sys.exit('merge-pdf requires at least 2 files.')
     non_pdf_flag = contains_non_pdf(args)
     pdf_paths = args_to_paths(args=args, non_pdf_flag=non_pdf_flag)
+    clear_screen()
     now_time = datetime.now().strftime('%Y%m%d%H%M%S')
-    outfile = 'merged-' + now_time + '.pdf'
+    outfile = join(out_dir, 'merged-' + now_time + '.pdf')
     merge_pdfs(pdf_paths, outfile)
 
 
 if __name__ == '__main__':
-    print("\n+----------------------+")
-    print("|                      |")
-    print("|  PDF MERGER ver 1.0  |")
-    print("|                      |")
-    print("+----------------------+\n")
+    print("\n+-------------------------------------+")
+    print("|                                     |")
+    print("|  PDF MERGER FOR WINDOWS 10 ver 1.0  |")
+    print("|                                     |")
+    print("+-------------------------------------+\n")
     main()
