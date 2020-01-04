@@ -129,7 +129,10 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
 
 
 def print_tabulate(table: list):
-    ptable = [[i+1, a] for i,a in enumerate(table)]
+    if len(table) == 0:
+        ptable = [['[empty]', '']]
+    else:
+        ptable = [[i+1, a] for i,a in enumerate(table)]
     print('\nMerge Queue:\n\n'+tabulate(ptable, headers=['order', 'file'], tablefmt="presto")+'\n')
     pass
 
