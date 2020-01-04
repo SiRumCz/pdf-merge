@@ -30,6 +30,15 @@ excel_support = [
 ]
 
 
+def print_header():
+    print("\n+-------------------------------------+")
+    print("|                                     |")
+    print("|  PDF MERGER FOR WINDOWS 10 ver 1.0  |")
+    print("|                                     |")
+    print("+-------------------------------------+\n")
+    pass
+
+
 def merge_pdfs(paths: list, output: str):
     '''
     credit:
@@ -120,9 +129,16 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
 
 
 def print_tabulate(table: list):
-    clear_screen()
     ptable = [[i+1, a] for i,a in enumerate(table)]
     print('\nMerge Queue:\n\n'+tabulate(ptable, headers=['order', 'file'], tablefmt="presto")+'\n')
+    pass
+
+
+def print_contents(table: list, out_dir: str):
+    clear_screen()
+    print_header()
+    print('\nTarget directory: %s' % out_dir)
+    print_tabulate(table=table)
     pass
 
 
@@ -130,8 +146,9 @@ def main():
     args = []
     out_dir = os.path.normpath(sys.argv[1].strip().strip('\"'))
     while True:
+        print_contents(table=args, out_dir=out_dir)
         arg = input('add(or drag) file, then hit <Enter> ([1]type "dd" to delete last file [2] leave empty to start): ')
-        if arg == 'dd':
+        if arg == 'dd' and len(args) > 0:
             args.pop()
         elif arg:
             # default local volume label
@@ -150,7 +167,6 @@ def main():
         else:
             clear_screen()
             break
-        print_tabulate(table=args)
     if len(args) < 2:
         sys.exit('merge-pdf requires at least 2 files.')
     non_pdf_flag = contains_non_pdf(args)
@@ -162,9 +178,4 @@ def main():
 
 
 if __name__ == '__main__':
-    print("\n+-------------------------------------+")
-    print("|                                     |")
-    print("|  PDF MERGER FOR WINDOWS 10 ver 1.0  |")
-    print("|                                     |")
-    print("+-------------------------------------+\n")
     main()
