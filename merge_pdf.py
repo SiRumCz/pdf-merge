@@ -65,7 +65,7 @@ def contains_non_pdf(paths: list) -> bool:
 
 
 def get_ext(fname: str) -> str:
-    return splitext(fname)[1]
+    return splitext(fname)[1].lower()
 
 
 def clear_screen(): 
@@ -85,9 +85,9 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
     ret_paths = []
     for arg in args:
         arg = abspath(arg)
-        if arg.endswith('.pdf') is False:
+        fext = get_ext(arg)
+        if arg == '.pdf' is False:
             print('saving file [{ef}] as pdf..'.format(ef=arg), end='')
-            fext = get_ext(arg)
             try:
                 if fext in word_support:
                     # try open with Microsoft Word
