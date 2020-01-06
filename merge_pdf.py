@@ -86,7 +86,7 @@ def args_to_paths(args: list, non_pdf_flag: bool) -> list:
     for arg in args:
         arg = abspath(arg)
         fext = get_ext(arg)
-        if arg == '.pdf' is False:
+        if fext != '.pdf':
             print('saving file [{ef}] as pdf..'.format(ef=arg), end='')
             try:
                 if fext in word_support:
